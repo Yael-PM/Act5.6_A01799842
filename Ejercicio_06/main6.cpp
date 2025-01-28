@@ -1,3 +1,12 @@
+
+/*
+Ejercicio 6: Particiones con Branch and Bound mejorada del ejercico 5
+ * Autores:
+ *   - Andrés Cabrera Alvarado - A01798681
+ *   - Yael Octavio Pérez Méndez - A01799842
+ * Fecha de creación: 27/01/25
+ */
+
 #include <iostream>
 #include <vector>
 #include <cmath>
