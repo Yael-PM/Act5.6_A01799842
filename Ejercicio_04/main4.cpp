@@ -16,22 +16,35 @@ Ejercicio 4: Particiones
 #include <climits>
 using namespace std;
 
-// Generar una lista de pesos aleatorios sin duplicados
-vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
+/*
+ * @brief Genera una lista de pesos aleatorios únicos dentro de un rango dado.
+ * @param cantidad Número de pesos a generar.
+ * @param min_peso Valor mínimo del peso.
+ * @param max_peso Valor máximo del peso.
+ * @return vector de pesos únicos.
+ */
+vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso){
     set<int> unicos_pesos;
-    while (unicos_pesos.size() < cantidad) {
+    while (unicos_pesos.size() < cantidad){
         int peso = rand() % (max_peso - min_peso + 1) + min_peso;
         unicos_pesos.insert(peso);
     }
     return vector<int>(unicos_pesos.begin(), unicos_pesos.end());
 }
 
-// Función recursiva para calcular las particiones y su diferencia mínima
-void particiones(const vector<int>& pesos, int indice, int suma1, int suma2, int& min_dif, bool shortcicuits, bool stopearly) {
-    if (indice == pesos.size()) {
+/*
+ * @brief Implementa búsqueda exhaustiva recursiva para particionar un conjunto de pesos.
+ * @param pesos Vector de enteros con los pesos a particionar.
+ * @param indice Índice actual en la recursión.
+ * @param suma1 Suma actual del primer subconjunto.
+ * @param suma2 Suma actual del segundo subconjunto.
+ * @param min_dif Referencia a la diferencia mínima encontrada.
+ */
+void particiones(const vector<int>& pesos, int indice, int suma1, int suma2, int& min_dif, bool shortcicuits, bool stopearly){
+    if (indice == pesos.size()){
         // Calcular diferencia actual entre las dos particiones
         int diferencia = abs(suma1 - suma2);
-        if (diferencia < min_dif) {
+        if (diferencia < min_dif){
             min_dif = diferencia;
 
             // Si short circuit está habilitado y encontramos una solución óptima (diferencia = 0)
@@ -39,68 +52,61 @@ void particiones(const vector<int>& pesos, int indice, int suma1, int suma2, int
         }
         return;
     }
-
-    // Incluir el peso actual en el primer subconjunto
-    particiones(pesos, indice + 1, suma1 + pesos[indice], suma2, min_dif, shortcicuits, stopearly);
+    particiones(pesos, indice + 1, suma1 + pesos[indice], suma2, min_dif, shortcicuits, stopearly); //peso actual en el primer subconjunto
 
     // Si stop early está habilitado y ya encontramos una buena aproximación
-    if (stopearly && min_dif < 5) return;  // Ejemplo: detenerse si la diferencia es menor a 5
+    if (stopearly && min_dif < 5) return;
 
-    // Incluir el peso actual en el segundo subconjunto
-    particiones(pesos, indice + 1, suma1, suma2 + pesos[indice], min_dif, shortcicuits, stopearly);
+    particiones(pesos, indice + 1, suma1, suma2 + pesos[indice], min_dif, shortcicuits, stopearly); //peso actual en el segundo subconjunto
 }
 
 // Función principal para calcular la diferencia mínima entre particiones
-int particion_min(const vector<int>& pesos, bool shortcicuits, bool stopearly) {
+int particion_min(const vector<int>& pesos, bool shortcicuits, bool stopearly){
     int min_dif = INT_MAX;
     particiones(pesos, 0, 0, 0, min_dif, shortcicuits, stopearly);
     return min_dif;
 }
 
-int main() {
-    srand(static_cast<unsigned int>(time(0)));
+/*
+ * @brief Función principal que solicita parámetros al usuario y ejecuta el algoritmo de partición.
+ */
 
-    // Solicitar al usuario los parámetros de entrada
+int main(){
+    srand(static_cast<unsigned int>(time(0)));
     int cantidad, min_peso, max_peso;
-    cout << "Ingrese la cantidad de elementos: ";
+    cout << "elementos: ";
     cin >> cantidad;
-    cout << "Ingrese el peso minimo: ";
+    cout << "peso minimo: ";
     cin >> min_peso;
-    cout << "Ingrese el peso maximo: ";
+    cout << "peso maximo: ";
     cin >> max_peso;
 
     // Validar que se puedan generar suficientes pesos únicos
-    if (max_peso - min_peso + 1 < cantidad) {
-        cout << "Error: El rango de pesos no permite generar suficientes valores únicos." << endl;
+    if (max_peso - min_peso + 1 < cantidad){
+        cout << "el rango no puede generar suficientes valores." << endl;
         return 1;
     }
 
-    // Generar lista de pesos únicos
+    //lista de pesos únicos
     vector<int> pesos = pesos_unicos
 (cantidad, min_peso, max_peso);
 
-    // Mostrar los pesos generados
+    //mostrar los pesos generados
     cout << "Pesos generados: ";
-    for (int peso : pesos) {
+    for (int peso : pesos){
         cout << peso << " ";
     }
     cout << endl;
 
-    // Seleccionar si se usará short circuit o stop early
+    //short circuit o stop early
     char opcionshortcicuits, opcionstopearly;
-    cout << "¿Desea habilitar 'short circuit'? (s/n): ";
+    cout << "¿usar 'short circuit'? (s/n): ";
     cin >> opcionshortcicuits;
-    cout << "¿Desea habilitar 'stop early'? (s/n): ";
+    cout << "¿usar 'stop early'? (s/n): ";
     cin >> opcionstopearly;
-
     bool shortcicuits = (opcionshortcicuits == 's' || opcionshortcicuits == 'S');
     bool stopearly = (opcionstopearly == 's' || opcionstopearly == 'S');
-
-    // Calcular la partición mínima
-    int min_dif = particion_min(pesos, shortcicuits, stopearly);
-
-    // Mostrar el resultado
-    cout << "La diferencia mínima entre las particiones es: " << min_dif << endl;
-
+    int min_dif = particion_min(pesos, shortcicuits, stopearly); //calcula la partición mínima
+    cout << "solucion: " << min_dif << endl; //solución
     return 0;
 }
