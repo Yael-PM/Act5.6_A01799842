@@ -17,7 +17,14 @@ Ejercicio 7: heurística hill-climbing
 #include <algorithm>
 using namespace std;
 
-// Generar una lista de pesos aleatorios sin duplicados
+/*
+ * @brief Genera una lista de pesos únicos dentro de un rango dado.
+ * @param cantidad Número de pesos a generar.
+ * @param min_peso Valor mínimo del peso.
+ * @param max_peso Valor máximo del peso.
+ * @return vector de pesos únicos.
+ */
+
 vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
     set<int> unicos_pesos;
     while (unicos_pesos.size() < cantidad) {
@@ -27,11 +34,16 @@ vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
     return vector<int>(unicos_pesos.begin(), unicos_pesos.end());
 }
 
-// Implementación de Hill-Climbing
-int hill_climbing(const vector<int>& pesos) {
-    int suma1 = 0, suma2 = 0;  // Inicializar las sumas de los dos subconjuntos
-    int nivel = 0;            // Nivel actual del árbol
-    int diferencia = INT_MAX; // Diferencia mínima encontrada
+/*
+ * @brief Implementa el algoritmo de Hill-Climbing para minimizar la diferencia entre dos subconjuntos de pesos.
+ * @param pesos Vector de enteros que representa los pesos a particionar.
+ * @return La diferencia mínima encontrada entre las sumas de los dos subconjuntos.
+ */
+
+int hill_climbing(const vector<int>& pesos){
+    int suma1 = 0, suma2 = 0;
+    int nivel = 0;
+    int diferencia = INT_MAX;
 
     while (nivel < pesos.size()) {
         // Generar los dos vecinos posibles
@@ -43,61 +55,45 @@ int hill_climbing(const vector<int>& pesos) {
         int diferencia2 = abs(suma1 - nueva_suma2);
 
         // Seleccionar el vecino que minimice la diferencia
-        if (diferencia1 < diferencia2) {
+        if (diferencia1 < diferencia2){
             suma1 = nueva_suma1;
             diferencia = diferencia1;
-        } else {
+        } else{
             suma2 = nueva_suma2;
             diferencia = diferencia2;
         }
-
-        // Si se alcanza una diferencia mínima posible, terminar
         if (diferencia == 0) break;
-
-        // Avanzar al siguiente nivel
-        nivel++;
+        nivel++; //siguiente nivel
     }
-
-    // Retornar la diferencia mínima encontrada
-    return diferencia;
+    return diferencia; //dif minima
 }
 
-int main() {
+/*
+ * @brief Función principal que solicita parámetros de entrada, genera los pesos y ejecuta el algoritmo Hill-Climbing.
+ * @return ejecución exitosa.
+ */
+
+int main(){
     srand(static_cast<unsigned int>(time(0)));
-
-    // Solicitar al usuario los parámetros de entrada
     int cantidad, min_peso, max_peso;
-    cout << "Ingrese la cantidad de elementos: ";
+    cout << "elementos: ";
     cin >> cantidad;
-    cout << "Ingrese el peso minimo: ";
+    cout << "peso minimo: ";
     cin >> min_peso;
-    cout << "Ingrese el peso maximo: ";
+    cout << "peso maximo: ";
     cin >> max_peso;
-
-    // Validar que se puedan generar suficientes pesos únicos
-    if (max_peso - min_peso + 1 < cantidad) {
-        cout << "Error: El rango de pesos no permite generar suficientes valores únicos." << endl;
+    if (max_peso - min_peso + 1 < cantidad){ //valida los pesos
+        cout << "el rango no puede generar suficientes valores." << endl;
         return 1;
     }
-
-    // Generar lista de pesos únicos
     vector<int> pesos = pesos_unicos(cantidad, min_peso, max_peso);
-
-    // Ordenar pesos en orden decreciente para mayor eficiencia
-    sort(pesos.rbegin(), pesos.rend());
-
-    // Mostrar los pesos generados
-    cout << "Pesos generados (ordenados): ";
-    for (int peso : pesos) {
+    sort(pesos.rbegin(), pesos.rend()); //ordenar pesos en orden decreciente para mayor eficiencia
+    cout << "Pesos generados (hill-cimbing): ";
+    for (int peso : pesos){
         cout << peso << " ";
     }
     cout << endl;
-
-    // Ejecutar el algoritmo Hill-Climbing
-    int min_dif = hill_climbing(pesos);
-
-    // Mostrar el resultado
-    cout << "La diferencia mínima entre las particiones es: " << min_dif << endl;
-
+    int min_dif = hill_climbing(pesos); //ejecutar el algoritmo Hill-Climbing
+    cout << "Solucion: " << min_dif << endl; //solución
     return 0;
 }

@@ -18,72 +18,90 @@ Ejercicio 7: heurística mejorada
 #include <algorithm>
 using namespace std;
 
-// Estructura para representar un nodo en el árbol de soluciones
-struct Nodo {
-    int nivel;       // Nivel del árbol (índice del peso)
-    int suma1;       // Suma del primer subconjunto
-    int suma2;       // Suma del segundo subconjunto
-    int diferencia;  // Diferencia absoluta entre las dos sumas
+/*
+ * @brief nodo en el árbol de soluciones para el algoritmo Branch and Bound.
+ */
+struct Nodo{
+    int nivel;
+    int suma1;
+    int suma2;
+    int diferencia;
     int estimacion;  // Heurística: diferencia actual + estimación futura
 
-    // Sobrecarga para usar Nodo en una cola de prioridad
-    bool operator<(const Nodo& otro) const {
-        return estimacion > otro.estimacion; // Menor estimación tiene mayor prioridad
+    bool operator<(const Nodo& otro) const{ //sobrecarga para usar Nodo en una cola de prioridad
+        return estimacion > otro.estimacion; //menor estimación tiene mayor prioridad
     }
 };
 
-// Generar una lista de pesos aleatorios sin duplicados
-vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
+/*
+ * @brief Genera una lista de pesos aleatorios únicos dentro de un rango dado.
+ * @param cantidad Número de pesos a generar.
+ * @param min_peso Valor mínimo del peso.
+ * @param max_peso Valor máximo del peso.
+ * @return vector de pesos únicos.
+ */
+
+vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso){
     set<int> unicos_pesos;
-    while (unicos_pesos.size() < cantidad) {
+    while (unicos_pesos.size() < cantidad){
         int peso = rand() % (max_peso - min_peso + 1) + min_peso;
         unicos_pesos.insert(peso);
     }
     return vector<int>(unicos_pesos.begin(), unicos_pesos.end());
 }
 
-// Calcular la estimación heurística para un nodo
-int calcular_estimacion(const Nodo& nodo, const vector<int>& pesos, int nivel) {
+/*
+ * @brief Calcula una estimación heurística para minimizar la diferencia entre subconjuntos.
+ * @param nodo Nodo actual en el árbol de soluciones.
+ * @param pesos Vector de pesos originales.
+ * @param nivel Nivel actual en el árbol de búsqueda.
+ * @return diferencia mínima posible.
+ */
+
+int calcular_estimacion(const Nodo& nodo, const vector<int>& pesos, int nivel){
     int suma_restante = 0;
-    for (int i = nivel; i < pesos.size(); i++) {
+    for (int i = nivel; i < pesos.size(); i++){
         suma_restante += pesos[i];
     }
-    return nodo.diferencia + suma_restante; // Diferencia actual + suma de pesos restantes
+    return nodo.diferencia + suma_restante;
 }
 
-// Implementación iterativa de Branch and Bound con heurística mejorada
-int branch_and_bound_heuristica(const vector<int>& pesos, bool shortcicuits, bool stopearly) {
+/*
+ * @brief Implementa el algoritmo Branch and Bound con heurística mejorada para encontrar la partición mínima.
+ * @param pesos Vector de enteros con los pesos a particionar.
+ * @param shortcicuits Habilita la optimización de atajos si se encuentra una solución óptima temprana.
+ * @param stopearly Finaliza si la diferencia mínima encontrada es menor a un umbral definido.
+ * @return diferencia mínima entre las sumas de los dos subconjuntos.
+ */
+
+int branch_and_bound_heuristica(const vector<int>& pesos, bool shortcicuits, bool stopearly){
     priority_queue<Nodo> pq;
     pq.push({0, 0, 0, 0, 0}); // Nodo raíz
     int min_dif = INT_MAX;
-
-    while (!pq.empty()) {
+    while (!pq.empty()){
         Nodo actual = pq.top();
         pq.pop();
-
-        if (actual.nivel == pesos.size()) {
-            if (actual.diferencia < min_dif) {
+        if (actual.nivel == pesos.size()){
+            if (actual.diferencia < min_dif){
                 min_dif = actual.diferencia;
                 if (shortcicuits && min_dif == 0) return min_dif;
             }
             continue;
         }
 
-        // Generar nodo incluyendo el peso actual en el primer subconjunto
+        //genera nodo incluyendo en el peso actual en el primer subconjunto
         Nodo nodo1 = {actual.nivel + 1, actual.suma1 + pesos[actual.nivel], actual.suma2,
                       abs((actual.suma1 + pesos[actual.nivel]) - actual.suma2)};
         nodo1.estimacion = calcular_estimacion(nodo1, pesos, actual.nivel + 1);
         pq.push(nodo1);
 
-        // Generar nodo incluyendo el peso actual en el segundo subconjunto
+        //genera nodo incluyendo en el peso actual en el segundo subconjunto
         Nodo nodo2 = {actual.nivel + 1, actual.suma1, actual.suma2 + pesos[actual.nivel],
                       abs(actual.suma1 - (actual.suma2 + pesos[actual.nivel]))};
         nodo2.estimacion = calcular_estimacion(nodo2, pesos, actual.nivel + 1);
         pq.push(nodo2);
-
         if (stopearly && min_dif < 5) return min_dif;
     }
-
     return min_dif;
 }
 
@@ -92,52 +110,41 @@ int particion_min(const vector<int>& pesos, bool shortcicuits, bool stopearly) {
     return branch_and_bound_heuristica(pesos, shortcicuits, stopearly);
 }
 
-int main() {
+/*
+ * @brief Función principal que solicita parámetros de entrada, genera los pesos y ejecuta el algoritmo.
+ * @return ejecución exitosa.
+ */
+
+int main(){
     srand(static_cast<unsigned int>(time(0)));
-
-    // Solicitar al usuario los parámetros de entrada
     int cantidad, min_peso, max_peso;
-    cout << "Ingrese la cantidad de elementos: ";
+    cout << "elementos: ";
     cin >> cantidad;
-    cout << "Ingrese el peso minimo: ";
+    cout << "peso minimo: ";
     cin >> min_peso;
-    cout << "Ingrese el peso maximo: ";
+    cout << "peso maximo: ";
     cin >> max_peso;
-
-    // Validar que se puedan generar suficientes pesos únicos
-    if (max_peso - min_peso + 1 < cantidad) {
-        cout << "Error: El rango de pesos no permite generar suficientes valores únicos." << endl;
+    if (max_peso - min_peso + 1 < cantidad){ //valida los pesos
+        cout << "el rango no puede generar suficientes valores." << endl;
         return 1;
     }
-
-    // Generar lista de pesos únicos
     vector<int> pesos = pesos_unicos(cantidad, min_peso, max_peso);
-
-    // Ordenar pesos de manera descendente para mejorar la eficiencia
-    sort(pesos.rbegin(), pesos.rend());
-
-    // Mostrar los pesos generados
-    cout << "Pesos generados (ordenados): ";
-    for (int peso : pesos) {
+    sort(pesos.rbegin(), pesos.rend()); //ordenar pesos en orden decreciente para mayor eficiencia
+    cout << "Pesos generados (heuristica mejorada): ";
+    for (int peso : pesos){
         cout << peso << " ";
     }
     cout << endl;
 
-    // Seleccionar opciones del algoritmo
+    //opciones del algoritmo
     char opcionshortcicuits, opcionstopearly;
-    cout << "¿Desea habilitar 'short circuit'? (s/n): ";
+    cout << "¿usar 'short circuit'? (s/n): ";
     cin >> opcionshortcicuits;
-    cout << "¿Desea habilitar 'stop early'? (s/n): ";
+    cout << "¿usar 'stop early'? (s/n): ";
     cin >> opcionstopearly;
-
     bool shortcicuits = (opcionshortcicuits == 's' || opcionshortcicuits == 'S');
     bool stopearly = (opcionstopearly == 's' || opcionstopearly == 'S');
-
-    // Calcular la partición mínima
-    int min_dif = particion_min(pesos, shortcicuits, stopearly);
-
-    // Mostrar el resultado
-    cout << "La diferencia mínima entre las particiones es: " << min_dif << endl;
-
+    int min_dif = particion_min(pesos, shortcicuits, stopearly); //particion minima
+    cout << "Solucion: " << min_dif << endl; //solución
     return 0;
 }

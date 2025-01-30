@@ -18,76 +18,93 @@ Ejercicio 7: Particiones con Branch and Bound y heurística aleatoria
 #include <random>
 using namespace std;
 
-// Estructura para representar un nodo en el árbol de soluciones
-struct Nodo {
-    int nivel;       // Nivel del árbol (índice del peso)
-    int suma1;       // Suma del primer subconjunto
-    int suma2;       // Suma del segundo subconjunto
-    int diferencia;  // Diferencia absoluta entre las dos sumas
+/*
+ * @brief nodo en el árbol de soluciones para el algoritmo Branch and Bound.
+ */
+struct Nodo{
+    int nivel;
+    int suma1;
+    int suma2;
+    int diferencia;
 
-    // Sobrecarga para usar Nodo en una cola de prioridad
-    bool operator<(const Nodo& otro) const {
-        return diferencia > otro.diferencia; // Menor diferencia tiene mayor prioridad
+    bool operator<(const Nodo& otro) const{ //sobrecarga para usar Nodo en una cola de prioridad
+        return diferencia > otro.diferencia; // menor diferencia tiene mayor prioridad
     }
 };
 
-// Generar una lista de pesos aleatorios sin duplicados
-vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
+/*
+ * @brief Genera una lista de pesos aleatorios únicos dentro de un rango dado.
+ * @param cantidad Número de pesos a generar.
+ * @param min_peso Valor mínimo del peso.
+ * @param max_peso Valor máximo del peso.
+ * @return vector de pesos únicos.
+ */
+
+vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso){
     set<int> unicos_pesos;
-    while (unicos_pesos.size() < cantidad) {
+    while (unicos_pesos.size() < cantidad){
         int peso = rand() % (max_peso - min_peso + 1) + min_peso;
         unicos_pesos.insert(peso);
     }
     return vector<int>(unicos_pesos.begin(), unicos_pesos.end());
 }
 
-// Implementación iterativa de Branch and Bound con heurística aleatoria
-int branch_and_bound_heuristica(const vector<int>& pesos, bool shortcicuits, bool stopearly, bool random_heuristic, double heuristic_prob) {
+/*
+ * @brief Implementa el algoritmo Branch and Bound con heurística aleatoria para encontrar la partición mínima.
+ * @param pesos Vector de enteros con los pesos a particionar.
+ * @param shortcicuits Habilita la optimización de atajos si se encuentra una solución óptima temprana.
+ * @param stopearly Finaliza si la diferencia mínima encontrada es menor a un umbral definido.
+ * @param random_heuristic Activa el uso de heurística aleatoria para decidir si se expanden nodos.
+ * @param heuristic_prob Probabilidad de expansión de nodos cuando la heurística aleatoria está activada.
+ * @return diferencia mínima entre las sumas de los dos subconjuntos.
+ */
+int branch_and_bound_heuristica(const vector<int>& pesos, bool shortcicuits, bool stopearly, bool random_heuristic, double heuristic_prob){
     priority_queue<Nodo> pq;
-    pq.push({0, 0, 0, 0}); // Nodo raíz
+    pq.push({0, 0, 0, 0});
     int min_dif = INT_MAX;
     random_device rd;
     mt19937 gen(rd());
     uniform_real_distribution<> dis(0.0, 1.0);
-
-    while (!pq.empty()) {
+    while (!pq.empty()){
         Nodo actual = pq.top();
         pq.pop();
-
-        if (actual.nivel == pesos.size()) {
-            if (actual.diferencia < min_dif) {
+        if (actual.nivel == pesos.size()){
+            if (actual.diferencia < min_dif){
                 min_dif = actual.diferencia;
                 if (shortcicuits && min_dif == 0) return min_dif;
             }
             continue;
         }
 
-        // Generar nodo incluyendo el peso actual en el primer subconjunto
+        //genera nodo incluyendo en el peso actual en el primer subconjunto
         Nodo nodo1 = {actual.nivel + 1, actual.suma1 + pesos[actual.nivel], actual.suma2, abs((actual.suma1 + pesos[actual.nivel]) - actual.suma2)};
-        // Agregar nodo con probabilidad controlada por la heurística
-        if (!random_heuristic || dis(gen) < heuristic_prob) {
+        //agrega nodo con heurística
+        if (!random_heuristic || dis(gen) < heuristic_prob){
             pq.push(nodo1);
         }
 
-        // Generar nodo incluyendo el peso actual en el segundo subconjunto
+        //genera nodo incluyendo en el peso actual en el segundo subconjunto
         Nodo nodo2 = {actual.nivel + 1, actual.suma1, actual.suma2 + pesos[actual.nivel], abs(actual.suma1 - (actual.suma2 + pesos[actual.nivel]))};
-        // Agregar nodo con probabilidad controlada por la heurística
-        if (!random_heuristic || dis(gen) < heuristic_prob) {
+        //agrega nodo con heurística
+        if (!random_heuristic || dis(gen) < heuristic_prob){
             pq.push(nodo2);
         }
-
         if (stopearly && min_dif < 5) return min_dif;
     }
-
     return min_dif;
 }
 
 // Función principal para calcular la diferencia mínima entre particiones
-int particion_min(const vector<int>& pesos, bool shortcicuits, bool stopearly, bool random_heuristic, double heuristic_prob) {
+int particion_min(const vector<int>& pesos, bool shortcicuits, bool stopearly, bool random_heuristic, double heuristic_prob){
     return branch_and_bound_heuristica(pesos, shortcicuits, stopearly, random_heuristic, heuristic_prob);
 }
 
-int main() {
+/*
+ * @brief Función principal que solicita parámetros de entrada, genera los pesos y ejecuta el algoritmo.
+ * @return ejecución exitosa.
+ */
+
+int main(){
     srand(static_cast<unsigned int>(time(0)));
 
     // Solicitar al usuario los parámetros de entrada
@@ -100,7 +117,7 @@ int main() {
     cin >> max_peso;
 
     // Validar que se puedan generar suficientes pesos únicos
-    if (max_peso - min_peso + 1 < cantidad) {
+    if (max_peso - min_peso + 1 < cantidad){
         cout << "Error: El rango de pesos no permite generar suficientes valores únicos." << endl;
         return 1;
     }
@@ -110,36 +127,31 @@ int main() {
 
     // Mostrar los pesos generados
     cout << "Pesos generados: ";
-    for (int peso : pesos) {
+    for (int peso : pesos){
         cout << peso << " ";
     }
     cout << endl;
 
     // Seleccionar opciones del algoritmo
     char opcionshortcicuits, opcionstopearly, opcionheuristica;
-    cout << "¿Desea habilitar 'short circuit'? (s/n): ";
+    cout << "¿usar 'short circuit'? (s/n): ";
     cin >> opcionshortcicuits;
-    cout << "¿Desea habilitar 'stop early'? (s/n): ";
+    cout << "¿usar 'stop early'? (s/n): ";
     cin >> opcionstopearly;
-    cout << "¿Desea usar heurística aleatoria? (s/n): ";
+    cout << "¿usar heurística aleatoria? (s/n): ";
     cin >> opcionheuristica;
 
     bool shortcicuits = (opcionshortcicuits == 's' || opcionshortcicuits == 'S');
     bool stopearly = (opcionstopearly == 's' || opcionstopearly == 'S');
     bool random_heuristic = (opcionheuristica == 's' || opcionheuristica == 'S');
 
-    // Parámetro de probabilidad para la heurística aleatoria
-    double heuristic_prob = 0.5; // Default: 50%
-    if (random_heuristic) {
-        cout << "Ingrese la probabilidad de aceptar nodos (0.0 - 1.0): ";
+    //heurística aleatoria
+    double heuristic_prob = 0.5; //50%
+    if (random_heuristic){
+        cout << "probabilidad de nodos (0.0 a 1.0): ";
         cin >> heuristic_prob;
     }
-
-    // Calcular la partición mínima
-    int min_dif = particion_min(pesos, shortcicuits, stopearly, random_heuristic, heuristic_prob);
-
-    // Mostrar el resultado
-    cout << "La diferencia mínima entre las particiones es: " << min_dif << endl;
-
+    int min_dif = particion_min(pesos, shortcicuits, stopearly, random_heuristic, heuristic_prob); //partición mínima
+    cout << "solucion: " << min_dif << endl; //solución
     return 0;
 }
