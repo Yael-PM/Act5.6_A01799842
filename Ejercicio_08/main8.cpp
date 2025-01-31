@@ -4,6 +4,7 @@ Ejercicio 7: heurística mejorada
  * Autores:
  *   - Andrés Cabrera Alvarado - A01798681
  *   - Yael Octavio Pérez Méndez - A01799842
+ *   - José Eduardo Rosas Ponciano - A017
  * Fecha de creación: 27/01/25
  */
 
