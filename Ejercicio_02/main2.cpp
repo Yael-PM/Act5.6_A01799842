@@ -4,7 +4,7 @@ Ejercicio 2: Piezas iniciales
  * Autores:
  *   - Andrés Cabrera Alvarado - A01798681
  *   - Yael Octavio Pérez Méndez - A01799842
- *   - José Eduardo Rosas Ponciano - A017
+ *   - José Eduardo Rosas Ponciano - A01784461
  * Fecha de creación: 27/01/25
  */
 
@@ -38,7 +38,11 @@ char ganador() {
     return '.'; // No hay ganador aún
 }
 
-// Función para calcular los posibles juegos desde una posición dada
+/**
+ * Funcion para simular los posibles juegos
+ * @param jugadorActual char que muestra si el jugador es 'X' o 'O'
+ * @return no retorna nada
+ */
 void simular(char jugadorActual) {
     char winner = ganador();
 
@@ -68,7 +72,11 @@ void simular(char jugadorActual) {
     }
 }
 
-// Función para imprimir el tablero con las posiciones numeradas
+/**
+ * Funcion que imprime el tablero
+ * @param numerado es un booleano que muestra el tablero numerado o no
+ * @return no retorna nada
+ */
 void imprimirTablero(bool numerado = false) {
     cout << "\nTablero actual:\n";
     for (int i = 0; i < 9; i++) {

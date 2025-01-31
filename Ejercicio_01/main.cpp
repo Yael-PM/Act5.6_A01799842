@@ -4,7 +4,7 @@ Ejercicio 1: Backtracking en tic-tac-toe
  * Autores:
  *   - Andrés Cabrera Alvarado - A01798681
  *   - Yael Octavio Pérez Méndez - A01799842
- *   - José Eduardo Rosas Ponciano - A017
+ *   - José Eduardo Rosas Ponciano - A01784461
  * Fecha de creación: 27/01/25
  */
 
