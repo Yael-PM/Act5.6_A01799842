@@ -1,0 +1,8 @@
+**¿Qué grupos encontraría un programa de particiones si usara la heurística Hill-Climbing para los pesos 7, 9, 7, 6, 7, 7, 5, 7, 5 y 6?
+- Al utilizar el algoritmo de Hill-Climbing se iteran los valores, con tal de minimizar la diferencia entre las sumas de los subconjuntos y al dividir el algoritmo se 
+encuentra el grupo 1 con:34 y el grupo 2 con: 32, a esto su diferencia minima es de:2
+
+
+**¿Cuáles son los pesos totales de los grupos y la diferencia entre los pesos totales?
+- Los pesos totales de los grupos son {45, 20, 12, 5}, su suma es de: 82. Del sigueinte grupo son {30, 15, 10, 7}, y su suma de: 62.
+La diferencia total minima es de: 20

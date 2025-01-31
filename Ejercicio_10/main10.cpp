@@ -1,6 +1,6 @@
 
 /*
-Ejercicio 7: heurística hill-climbing
+Ejercicio 10: heurística hill-climbing
  * Autores:
  *   - Andrés Cabrera Alvarado - A01798681
  *   - Yael Octavio Pérez Méndez - A01799842
@@ -26,9 +26,9 @@ using namespace std;
  * @return vector de pesos únicos.
  */
 
-vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso) {
+vector<int> pesos_unicos(int cantidad, int min_peso, int max_peso){
     set<int> unicos_pesos;
-    while (unicos_pesos.size() < cantidad) {
+    while (unicos_pesos.size() < cantidad){
         int peso = rand() % (max_peso - min_peso + 1) + min_peso;
         unicos_pesos.insert(peso);
     }

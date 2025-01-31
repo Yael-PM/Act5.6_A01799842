@@ -1,6 +1,6 @@
 
 /*
-Ejercicio 7: heurística mejorada
+Ejercicio 8: heurística mejorada
  * Autores:
  *   - Andrés Cabrera Alvarado - A01798681
  *   - Yael Octavio Pérez Méndez - A01799842
